@@ -3,66 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <title>Simple Calculator</title>
-    <script type="text/javascript">
-        var op1 = 0, op2 = 0, operator = "", res = "", from = "";
+    <script>
+        var operand1 = 0, operator = null, flag = false;
+        var calculate = {
+            '+': function (a, b) {
+                return (a + b);
+            },
+            '-': function (a, b) {
+                return (a - b);
+            },
+            '*': function (a, b) {
+                return (a * b);
+            },
+            '/': function (a, b) {
+                return (a / b);
+            }
+        };
 
         function reset() {
-            document.getElementById('res').value = "";
-            op1 = 0;
-            op2 = 0;
-            operator = "";
-            res = "";
-            from = "";
+            document.getElementById('input-field').value = "";
+            operand1 = 0;
         }
 
-        function insertoperand(val) {
-            if (from == "calculate")
-                reset();
-            else if (from == "operator")
-                document.getElementById('res').value = "";
-            document.getElementById('res').value += val;
-            from = "operand";
+        function display(value) {
+            document.getElementById('input-field').value = Number(value);
         }
 
-        function insertoperator(op) {
-            if (op1 == 0) {
-                op1 = document.getElementById('res').value;
+        function clearInputField() {
+            if (flag) {
+                document.getElementById('input-field').value = '';
+                flag = false;
             }
-            else {
-                if (from == "operand") {
-                    calculate();
-                }
-            }
-            operator = op;
-            from = "operator";
         }
 
-        function calculate() {
-            op2 = document.getElementById('res').value;
-            op1 = parseInt(op1);
-            op2 = parseInt(op2);
-            switch (operator) {
-                case '+':
-                    res = op1 + op2;
-                    break;
-                case '-' :
-                    res = op1 - op2;
-                    break;
-                case '*':
-                    res = op1 * op2;
-                    break;
-                case '/':
-                    if (op2 == 0)
-                        res = 0;
-                    else
-                        res = parseInt(op1 / op2);
-                    break;
+        function insertOperand(operand) {
+            // case 1: a + b
+            // case 2: a + b =
+
+            clearInputField();
+            var currentValue = document.getElementById('input-field').value;
+            display(currentValue + operand);
+        }
+
+        function insertOperator(op) {
+            // case 1: + done
+            // case 2: a + done
+            // case 3: a + b + done
+
+            var currentValue = Number(document.getElementById('input-field').value);
+
+            clearInputField();      //If any operator is pressed again after pressing '='
+
+            if (currentValue <= 0) {        //First Attempt is an operator
+                return;
+            } else if (op == '=' && operand1 > 0 && currentValue > 0) {  //If equal to is pressed - valid case
+                var result = calculate[operator](operand1, currentValue);
+                display(result);
+                operand1 = 0;
+            } else if ((operand1 > 0) && (currentValue > 0)) {   //Any operator is pressed after a valid expression(a+b)
+                var result = calculate[operator](operand1, currentValue);
+                operand1 = result;
+                display(operand1);
+                operator = op;
+            } else if (currentValue > 0) {
+                operand1 = currentValue;
+                operator = op;
             }
-            document.getElementById('res').value = res;
-            op1 = res;
-            op2 = 0;
-            operator = "";
-            from = "calculate";
+
+            flag = true;  //Clear input field after pressing any operator in the next cycle
         }
     </script>
     <style type="text/css">
@@ -74,37 +82,38 @@
             text-align: center
         }
     </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body onload="reset()">
 <h1>Simple Calculator</h1>
-<table align="center" border="1">
-    <tr>
-        <td colspan="5"><input type="text" id="res" name="res" value=""/></td>
-    </tr>
-    <tr>
-        <td><input type="button" value="7" onclick="insertoperand('7')"/></td>
-        <td><input type="button" value="8" onclick="insertoperand('8')"/></td>
-        <td><input type="button" value="9" onclick="insertoperand('9')"/></td>
-        <td><input type="button" value="+" onclick="insertoperator('+')"/></td>
-        <td><input type="button" value="-" onclick="insertoperator('-')"/></td>
-    </tr>
-    <tr>
-        <td><input type="button" value="5" onclick="insertoperand('5')"/></td>
-        <td><input type="button" value="6" onclick="insertoperand('6')"/></td>
-        <td><input type="button" value="7" onclick="insertoperand('7')"/></td>
-        <td><input type="button" value="*" onclick="insertoperator('*')"/></td>
-        <td><input type="button" value="/" onclick="insertoperator('/')"/></td>
-    </tr>
-    <tr>
-        <td><input type="button" value="1" onclick="insertoperand('1')"/></td>
-        <td><input type="button" value="2" onclick="insertoperand('2')"/></td>
-        <td><input type="button" value="3" onclick="insertoperand('3')"/></td>
-        <td><input type="button" value="0" onclick="insertoperand('0')"/></td>
-        <td><input type="button" value="=" onclick="calculate()"/></td>
-    </tr>
-    <tr>
-        <td colspan="5"><input type="button" size="100%" value="CLEAR" onclick="reset()"/></td>
-    </tr>
-</table>
+<div class="calculator">
+    <div class="input-container">
+        <input type="text" class="input-field" id="input-field" placeholder="Enter Values"/>
+    </div>
+    <div class="row">
+        <button onclick="insertOperand('7')">7</button>
+        <button onclick="insertOperand('8')">8</button>
+        <button onclick="insertOperand('9')">9</button>
+        <button onclick="insertOperator('+')">+</button>
+        <button onclick="insertOperator('-')">-</button>
+    </div>
+    <div class="row">
+        <button onclick="insertOperand('4')">4</button>
+        <button onclick="insertOperand('5')">5</button>
+        <button onclick="insertOperand('6')">6</button>
+        <button onclick="insertOperator('*')">*</button>
+        <button onclick="insertOperator('/')">/</button>
+    </div>
+    <div class="row">
+        <button onclick="insertOperand('1')">1</button>
+        <button onclick="insertOperand('2')">2</button>
+        <button onclick="insertOperand('3')">3</button>
+        <button onclick="insertOperator('0')">0</button>
+        <button onclick="insertOperator('=')">=</button>
+    </div>
+    <div>
+        <button class="clear-button" onclick="reset()">CLEAR</button>
+    </div>
+</div>
 </body>
 </html>

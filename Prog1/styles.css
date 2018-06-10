@@ -1,0 +1,39 @@
+
+.calculator {
+    width: 50%;
+    margin: 0 auto;
+    border: 1px solid #555;
+    padding: 10px;
+}
+
+.row {
+    display: flex;
+}
+
+.row button {
+    border: 1px solid #555;
+    padding: 10px;
+    background: #fff;
+    margin: 2px;
+    width: 100%;
+}
+
+.input-container {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.input-field {
+    font-size: 16px;
+    position: relative;
+    width: 250px;
+    padding: 5px;
+}
+
+.clear-button {
+    width: 100%;
+    font-size: 14px;
+    padding: 5px;
+    background: #eee;
+    border: none;
+}
